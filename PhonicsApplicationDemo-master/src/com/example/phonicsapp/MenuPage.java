@@ -23,6 +23,7 @@ import android.preference.PreferenceManager;
 import android.view.Display;
 import android.view.MenuInflater;
 
+import com.example.accountSystem.AccountDisplayPage;
 import com.example.phonicsapp.animatedBook.AnimatedBookActivity;
 import com.example.phonicsapp.boxGame.BoxGameActivity;
 import com.example.phonicsapp.monkeyGame.MonkeyGameActivity;
@@ -55,7 +56,8 @@ public class MenuPage extends SimpleBaseGameActivity implements IOnSceneTouchLis
 	//public int i,j;
 	public static int letterNumber;
 	public int menuLetterBlockSize;
-	public static int counter, c;
+	public static int counter;
+	public static boolean letterEnable;
 	
 	@Override
 	public void onBackPressed()
@@ -63,7 +65,7 @@ public class MenuPage extends SimpleBaseGameActivity implements IOnSceneTouchLis
 	   
 //	    BoxGameActivity.super.onBackPressed();
 		finish();
-		startActivity(new Intent(getBaseContext(), GameMainPage.class));
+		//startActivity(new Intent(getBaseContext(), GameMainPage.class));
 	}
 	
 	@Override
@@ -147,6 +149,206 @@ public class MenuPage extends SimpleBaseGameActivity implements IOnSceneTouchLis
 		menuBackground.setWidth(CAMERA_WIDTH);
 		menuScene.attachChild(menuBackground);
 		
+		//setMenuLetter
+		setMenuLetter();
+		//set the lock icon
+		setLock();
+		
+//		if(AccountDisplayPage.accountNumber)
+		
+		//Load menu locked and unlocked letters according to the users
+		if(AccountDisplayPage.accountNumber==0)
+		{
+			counter = loadSavedPreferences("0");
+			Debug.d("loassssssssssssssssssssssssssss:"+counter);
+		}
+		else if(AccountDisplayPage.accountNumber==1)
+		{
+			counter = loadSavedPreferences("1");
+			Debug.d("loassssssssssssssssssssssssssss:"+counter);
+		}
+		else if(AccountDisplayPage.accountNumber==2)
+		{
+			counter = loadSavedPreferences("2");
+			Debug.d("loassssssssssssssssssssssssssss:"+counter);
+		}
+		else if(AccountDisplayPage.accountNumber==3)
+		{
+			counter = loadSavedPreferences("3");
+			Debug.d("loassssssssssssssssssssssssssss:"+counter);
+		}
+		else if(AccountDisplayPage.accountNumber==4)
+		{
+			counter = loadSavedPreferences("4");
+			Debug.d("loassssssssssssssssssssssssssss:"+counter);
+		}
+		else if(AccountDisplayPage.accountNumber==5)
+		{
+			counter = loadSavedPreferences("5");
+			Debug.d("loassssssssssssssssssssssssssss:"+counter);
+		}
+//		counter = loadSavedPreferences("c");
+//		Debug.d("loassssssssssssssssssssssssssss:"+loadSavedPreferences("c"));
+		if(counter!=20)
+		{
+			for(int i=0;i<=counter;i++)
+			{
+				lock[i].setVisible(false);
+				menuScene.registerTouchArea(letter[i]);
+			}
+		}
+		else if(counter==20 || counter > 20)
+		{
+			for(int i=0;i<=19;i++)
+			{
+				lock[i].setVisible(false);
+				menuScene.registerTouchArea(letter[i]);
+			}
+//			finish();
+//			startActivity(new Intent(getBaseContext(), MenuPage.class));
+		}
+		return menuScene;
+	}
+
+	//set the lock icon
+	public static void setLock()
+	{
+		for(int k=1; k<=5; k++)
+		{
+			for(int l=1; l<=4; l++) 
+			{
+				menuLettersLock[k][l] = new Sprite(k*130-120, l*100-120, mMenuTextureRegionMenuLettersLock,
+						vertexBufferObjectManager);
+				menuLettersLock[k][l].setScale((float) 0.4);
+				menuScene.attachChild(menuLettersLock[k][l]);
+				//menuScene.registerTouchArea(menuLettersLock[k][l]);
+			} 
+		}
+		
+		lock[0] =  menuLettersLock[1][1];
+		lock[1] =  menuLettersLock[2][1];
+		lock[2] =  menuLettersLock[3][1];
+		lock[3] =  menuLettersLock[4][1];
+		lock[4] =  menuLettersLock[5][1];
+		lock[5] =  menuLettersLock[1][2];
+		lock[6] =  menuLettersLock[2][2];
+		lock[7] =  menuLettersLock[3][2];
+		lock[8] =  menuLettersLock[4][2];
+		lock[9] =  menuLettersLock[5][2];
+		lock[10] =  menuLettersLock[1][3];
+		lock[11] =  menuLettersLock[2][3];
+		lock[12] =  menuLettersLock[3][3];
+		lock[13] =  menuLettersLock[4][3];
+		lock[14] =  menuLettersLock[5][3];
+		lock[15] =  menuLettersLock[1][4];
+		lock[16] =  menuLettersLock[2][4];
+		lock[17] =  menuLettersLock[3][4];
+		lock[18] =  menuLettersLock[4][4];
+		lock[19] =  menuLettersLock[5][4];
+		
+//		lock[0].setVisible(false);
+//		menuScene.registerTouchArea(letter[0]);
+	}
+	
+	public boolean setMenuLetter(TouchEvent pSceneTouchEvent,int row, int column)
+	{
+		return pSceneTouchEvent.getX()- menuLetters[row][column].getWidth()/2> menuLetters[1][1].getX()-50 &&
+				pSceneTouchEvent.getX()-menuLetters[row][column].getWidth()/2<menuLetters[row][column].getX()+menuLetterBlockSize &&
+				pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2>menuLetters[row][column].getY()-60 &&
+				pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2<menuLetters[row][column].getY()+menuLetterBlockSize;
+	}
+	
+	//starting activity on clicking menu letters accordingly
+	public void setStartActivity(int number, int row, int column)
+	{
+		letterNumber = number;
+		
+		Debug.d("Letter Numberrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr:"+letterNumber);
+		menuLetters[row][column].setScale((float) 0.55);
+		
+		//setting unlock flag for unlocking the letters
+		if(menuLetters[row][column]==letter[counter])
+		{
+			letterEnable = true;
+			count();
+		} 
+		else 
+		{
+			letterEnable = false;
+		}
+		
+//		Intent intent = new Intent(getBaseContext(), AnimatedBookActivity.class);
+//		intent.putExtra("val",letterNumber);
+//		startActivity(intent);
+
+//		startActivity(new Intent(getBaseContext(), BoxGameActivity.class));
+			
+//		startActivity(new Intent(getBaseContext(), MonkeyGameActivity.class));
+		
+		startActivity(new Intent(getBaseContext(), MenuPage.class));
+		finish();
+	}
+	
+	//Unlock the letters according to the users
+	public static void count()
+	{
+		if(letterEnable ==true)
+		{
+			if(AccountDisplayPage.accountNumber==0)
+			{
+				counter++;
+				Debug.d("countersssssssssssssssss:"+counter);
+				savePreferences("0",counter); 
+			}
+			else if(AccountDisplayPage.accountNumber==1)
+			{
+				counter++;
+				Debug.d("countersssssssssssssssss:"+counter);
+				savePreferences("1",counter); 
+			}
+			else if(AccountDisplayPage.accountNumber==2)
+			{
+				counter++;
+				Debug.d("countersssssssssssssssss:"+counter);
+				savePreferences("2",counter); 
+			}
+			else if(AccountDisplayPage.accountNumber==3)
+			{
+				counter++;
+				Debug.d("countersssssssssssssssss:"+counter);
+				savePreferences("3",counter); 
+			}
+			else if(AccountDisplayPage.accountNumber==4)
+			{
+				counter++;
+				Debug.d("countersssssssssssssssss:"+counter);
+				savePreferences("4",counter); 
+			}
+			else if(AccountDisplayPage.accountNumber==5)
+			{
+				counter++;
+				Debug.d("countersssssssssssssssss:"+counter);
+				savePreferences("5",counter); 
+			}
+		}
+	}
+	
+	public static int loadSavedPreferences(String key)
+	{
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuInstace);
+		return sharedPreferences.getInt(key, 0);
+	}
+
+	public static void savePreferences(String key, int value)
+	{
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuInstace);
+		Editor editor = sharedPreferences.edit();
+		editor.putInt(key, value);
+		editor.commit();
+	}
+
+	public void setMenuLetter()
+	{
 		for(int i=1; i<=5; i++)
 		{
 			for(int j=1; j<=4; j++) 
@@ -317,109 +519,7 @@ public class MenuPage extends SimpleBaseGameActivity implements IOnSceneTouchLis
 			
 		}
 		
-		//set the lock icon
-		setLock();
-		
-		c = loadSavedPreferences("count");
-		Debug.d("loassssssssssssssssssssssssssss:"+loadSavedPreferences("count"));
-		if(c!=21)
-		{
-			for(int i=0;i<=c;i++)
-			{
-				lock[i].setVisible(false);
-				menuScene.registerTouchArea(letter[i]);
-			}
-		}
-		
-		return menuScene;
 	}
-
-	public static void setLock()
-	{
-		for(int k=1; k<=5; k++)
-		{
-			for(int l=1; l<=4; l++) 
-			{
-				menuLettersLock[k][l] = new Sprite(k*130-120, l*100-120, mMenuTextureRegionMenuLettersLock,
-						vertexBufferObjectManager);
-				menuLettersLock[k][l].setScale((float) 0.4);
-				menuScene.attachChild(menuLettersLock[k][l]);
-				//menuScene.registerTouchArea(menuLettersLock[k][l]);
-			} 
-		}
-		
-		lock[0] =  menuLettersLock[1][1];
-		lock[1] =  menuLettersLock[2][1];
-		lock[2] =  menuLettersLock[3][1];
-		lock[3] =  menuLettersLock[4][1];
-		lock[4] =  menuLettersLock[5][1];
-		lock[5] =  menuLettersLock[1][2];
-		lock[6] =  menuLettersLock[2][2];
-		lock[7] =  menuLettersLock[3][2];
-		lock[8] =  menuLettersLock[4][2];
-		lock[9] =  menuLettersLock[5][2];
-		lock[10] =  menuLettersLock[1][3];
-		lock[11] =  menuLettersLock[2][3];
-		lock[12] =  menuLettersLock[3][3];
-		lock[13] =  menuLettersLock[4][3];
-		lock[14] =  menuLettersLock[5][3];
-		lock[15] =  menuLettersLock[1][4];
-		lock[16] =  menuLettersLock[2][4];
-		lock[17] =  menuLettersLock[3][4];
-		lock[18] =  menuLettersLock[4][4];
-		lock[19] =  menuLettersLock[5][4];
-		
-//		lock[0].setVisible(false);
-//		menuScene.registerTouchArea(letter[0]);
-	}
-	
-	public boolean setMenuLetter(TouchEvent pSceneTouchEvent,int row, int column)
-	{
-		return pSceneTouchEvent.getX()- menuLetters[row][column].getWidth()/2> menuLetters[1][1].getX()-50 &&
-				pSceneTouchEvent.getX()-menuLetters[row][column].getWidth()/2<menuLetters[row][column].getX()+menuLetterBlockSize &&
-				pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2>menuLetters[row][column].getY()-60 &&
-				pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2<menuLetters[row][column].getY()+menuLetterBlockSize;
-	}
-	
-	public void setStartActivity(int number, int row, int column)
-	{
-		letterNumber = number;
-		
-//		Debug.d("Letter Number:"+letterNumber);
-		menuLetters[row][column].setScale((float) 0.55);
-//		Intent intent = new Intent(getBaseContext(), AnimatedBookActivity.class);
-//		intent.putExtra("val",letterNumber);
-//		startActivity(intent);
-
-//		startActivity(new Intent(getBaseContext(), BoxGameActivity.class));
-			
-//		startActivity(new Intent(getBaseContext(), MonkeyGameActivity.class));
-		count();		
-		startActivity(new Intent(getBaseContext(), MenuPage.class));
-		finish();
-	}
-	
-	public void count()
-	{
-		counter++;
-		Debug.d("countersssssssssssssssss:"+counter);
-		savePreferences("count",counter);
-	}
-	
-	private static int loadSavedPreferences(String key)
-	{
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuInstace);
-		return sharedPreferences.getInt(key, 0);
-	}
-
-	public static void savePreferences(String key, int value)
-	{
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuInstace);
-		Editor editor = sharedPreferences.edit();
-		editor.putInt(key, value);
-		editor.commit();
-	}
-
 	
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent)

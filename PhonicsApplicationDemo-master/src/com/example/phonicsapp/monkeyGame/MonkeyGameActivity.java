@@ -965,8 +965,10 @@ public class MonkeyGameActivity  extends SimpleBaseGameActivity implements IOnAr
 			monkeyGameLevelSelector = 0;
 			mScene.unregisterUpdateHandler(timer1);
 			MonkeyGameActivityActivity.finish();
-			MonkeyGameActivityActivity.startActivity(new Intent(MonkeyGameActivityActivity, GameMainPage.class));
-	
+			//MonkeyGameActivityActivity.startActivity(new Intent(MonkeyGameActivityActivity, GameMainPage.class));
+			MonkeyGameActivityActivity.startActivity(new Intent(MonkeyGameActivityActivity, MenuPage.class));
+			//Unlock the letters
+			MenuPage.count();
 			monkeyGameLevelSelector1[a] = 0;
 		}
 	}
