@@ -342,7 +342,7 @@ public class GameActivity extends BaseGameActivity implements IOnSceneTouchListe
 		letter = 0;
 		isHomeButtonCreated = false;
 
-		StatusBarController.StatusBar.hideStatusBar();
+		//StatusBarController.StatusBar.showStatusBar();
 		//getting the renderView width and height for taking the screen shot
 //		viewWidth = GameActivity.MainActivityInstace.mRenderSurfaceView.getWidth() - 470;
 //		viewHeight = GameActivity.MainActivityInstace.mRenderSurfaceView.getHeight() - 90;

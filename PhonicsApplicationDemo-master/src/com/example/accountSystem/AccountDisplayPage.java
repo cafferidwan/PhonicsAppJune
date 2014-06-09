@@ -14,7 +14,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.Toast;
 
 public class AccountDisplayPage extends Activity 
 {
@@ -32,11 +34,27 @@ public class AccountDisplayPage extends Activity
 	public File[] imgFile= new File[10];
 	public static int counter;
 	
+	Button adminButton;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		adminButton = (Button) findViewById(R.id.adminPress);
+		adminButton.setOnLongClickListener(new View.OnLongClickListener()
+		{
+			@Override
+			public boolean onLongClick(View v)
+			{
+				// TODO Auto-generated method stub
+				
+				Toast.makeText(getBaseContext(), "Hello", Toast.LENGTH_LONG).show();
+  
+				return true;
+			}
+		});
 
 		instance=this;
 		counter=0;

@@ -50,6 +50,8 @@ public class GameMainPage extends SimpleBaseGameActivity
 	
 	public static Sprite backGround, backGround2;
 	public static Sprite parrot, board, monkey;
+	//if game mode selector is 1, then select letter games, if 2 then select handwriting
+	public static int gameModeSelector;
 	
 	public static VertexBufferObjectManager vertexBufferObjectManager;
 	

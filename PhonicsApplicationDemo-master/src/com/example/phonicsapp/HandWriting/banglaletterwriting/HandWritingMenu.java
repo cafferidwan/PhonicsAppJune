@@ -14,9 +14,15 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.debug.Debug;
+
+import com.example.accountSystem.AccountDisplayPage;
+import com.example.phonicsapp.MenuPage;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.Display;
 
 public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneTouchListener
@@ -24,9 +30,9 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 
 	public static int CAMERA_WIDTH, CAMERA_HEIGHT;
 	public Camera mCamera;
-	public Scene menuScene;
-	public VertexBufferObjectManager vertexBufferObjectManager;
-	public HandWritingMenu MenuInstace;
+	public static Scene menuScene;
+	public static VertexBufferObjectManager vertexBufferObjectManager;
+	public static HandWritingMenu MenuInstace;
 
 	// Menu Items
 	public static BitmapTextureAtlas mBitmapTextureAtlasMenuBackground;
@@ -35,13 +41,19 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 	public static BitmapTextureAtlas[][] mBitmapTextureAtlasMenuLetters = new BitmapTextureAtlas[50][50];
 	public static ITextureRegion[][] mMenuTextureRegionMenuLetters = new ITextureRegion[50][50];
 
+	public static Sprite[][] handWritingMenuLettersLock = new Sprite[50][50];
+	public static Sprite[] handWritingLock = new Sprite[50];
 	
 	public static Sprite menuBackground;
 	public static Sprite[][] menuLetters = new Sprite[50][50];
-	public int i,j;
-	public static int letterNumber;
-	public int menuLetterBlockSize;
+	public static int letterNumber, handwritingMenuLettersCounters;
+	public int menuLetterBhandWritingLockSize;
 	
+	
+	public static BitmapTextureAtlas mBitmapTextureAtlasHandwritingLettersLock ;
+	public static ITextureRegion mTextureRegionHandwritingLettersLock ;
+	
+	public static Sprite[] handWritingLetter = new Sprite[50];
 
 	@Override
 	public EngineOptions onCreateEngineOptions() 
@@ -100,6 +112,16 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 				mBitmapTextureAtlasMenuLetters[i][j].load();
 			}
 		}
+		
+		//Lock icons
+		BitmapTextureAtlasTextureRegionFactory
+		.setAssetBasePath("Assets/");
+		mBitmapTextureAtlasHandwritingLettersLock = new BitmapTextureAtlas(
+				this.getTextureManager(), 200, 200, TextureOptions.BILINEAR);
+					
+		mTextureRegionHandwritingLettersLock= BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(mBitmapTextureAtlasHandwritingLettersLock, this, "lock.png", 0, 0, 1, 1);
+		mBitmapTextureAtlasHandwritingLettersLock.load();
 
 	}
 
@@ -111,16 +133,149 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 		menuScene = new Scene();
 		menuScene.setOnSceneTouchListener(this);
 
-		menuLetterBlockSize = 80;
+		menuLetterBhandWritingLockSize = 80;
 		
 		menuBackground = new Sprite(0, 0, mMenuBackGroundTextureRegion, vertexBufferObjectManager);
 		menuBackground.setHeight(CAMERA_HEIGHT);
 		menuBackground.setWidth(CAMERA_WIDTH);
 		menuScene.attachChild(menuBackground);
 		
-		for(i=1; i<=5; i++)
+		
+		setHandWritingMenuLetterIcon();
+		
+		//lock icons
+		setHandWritingLockIcon();
+		
+		if(AccountDisplayPage.accountNumber==0)
 		{
-			for(j=1; j<=4; j++) 
+			handwritingMenuLettersCounters = loadSavedPreferences("0");
+			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+		}
+		else if(AccountDisplayPage.accountNumber==1)
+		{
+			handwritingMenuLettersCounters = loadSavedPreferences("1");
+			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+		}
+		else if(AccountDisplayPage.accountNumber==2)
+		{
+			handwritingMenuLettersCounters = loadSavedPreferences("2");
+			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+		}
+		else if(AccountDisplayPage.accountNumber==3)
+		{
+			handwritingMenuLettersCounters = loadSavedPreferences("3");
+			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+		}
+		else if(AccountDisplayPage.accountNumber==4)
+		{
+			handwritingMenuLettersCounters = loadSavedPreferences("4");
+			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+		}
+		else if(AccountDisplayPage.accountNumber==5)
+		{
+			handwritingMenuLettersCounters = loadSavedPreferences("5");
+			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+		}
+		
+		//Exclude the extra count of the assessment part from menu page
+		if(handwritingMenuLettersCounters>=5 && handwritingMenuLettersCounters<11)
+		{
+			handwritingMenuLettersCounters = handwritingMenuLettersCounters-1;
+		}
+		else if(handwritingMenuLettersCounters>=11 && handwritingMenuLettersCounters<17)
+		{
+			handwritingMenuLettersCounters = handwritingMenuLettersCounters-2;
+		}
+		else if(handwritingMenuLettersCounters>=17 && handwritingMenuLettersCounters<=23)
+		{
+			handwritingMenuLettersCounters = handwritingMenuLettersCounters-3;
+		}
+		
+
+		if(handwritingMenuLettersCounters!=20)
+		{
+			for(int i=0;i<=handwritingMenuLettersCounters;i++)
+			{
+				handWritingLock[i].setVisible(false);
+				menuScene.registerTouchArea(handWritingLetter[i]);
+			}
+		}
+		else if(handwritingMenuLettersCounters==20 || handwritingMenuLettersCounters > 20)
+		{
+			for(int i=0;i<=19;i++)
+			{
+				handWritingLock[i].setVisible(false);
+				menuScene.registerTouchArea(handWritingLetter[i]);
+			}
+//			finish();
+//			startActivity(new Intent(getBaseContext(), MenuPage.class));
+		}
+		
+		return menuScene;
+	}
+
+	public boolean setMenuLetter(TouchEvent pSceneTouchEvent,int row, int column)
+	{
+		return pSceneTouchEvent.getX()- menuLetters[row][column].getWidth()/2> menuLetters[1][1].getX()-50 &&
+		pSceneTouchEvent.getX()-menuLetters[row][column].getWidth()/2<menuLetters[row][column].getX()+menuLetterBhandWritingLockSize &&
+		pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2>menuLetters[row][column].getY()-60 &&
+		pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2<menuLetters[row][column].getY()+menuLetterBhandWritingLockSize;
+	}
+	 
+	public void setStartActivity(int number, int row, int column)
+	{
+		menuLetters[row][column].setScale((float) 0.55);
+		letterNumber = number;
+		startActivity(new Intent(getBaseContext(), GameActivity.class)); 
+		finish();
+	}
+	
+	//set the handWritingLock icon
+	public static void setHandWritingLockIcon()
+	{
+		for(int k=1; k<=5; k++)
+		{
+			for(int l=1; l<=4; l++) 
+			{
+				handWritingMenuLettersLock[k][l] = new Sprite(k*130-120, l*100-120, mTextureRegionHandwritingLettersLock,
+						vertexBufferObjectManager);
+				handWritingMenuLettersLock[k][l].setScale((float) 0.4);
+				menuScene.attachChild(handWritingMenuLettersLock[k][l]);
+				//menuScene.registerTouchArea(handWritingMenuLettersLock[k][l]);
+			} 
+		}
+		
+		handWritingLock[0] =  handWritingMenuLettersLock[1][1];
+		handWritingLock[1] =  handWritingMenuLettersLock[2][1];
+		handWritingLock[2] =  handWritingMenuLettersLock[3][1];
+		handWritingLock[3] =  handWritingMenuLettersLock[4][1];
+		handWritingLock[4] =  handWritingMenuLettersLock[5][1];
+		
+		handWritingLock[5] =  handWritingMenuLettersLock[1][2];
+		handWritingLock[6] =  handWritingMenuLettersLock[2][2];
+		handWritingLock[7] =  handWritingMenuLettersLock[3][2];
+		handWritingLock[8] =  handWritingMenuLettersLock[4][2];
+		handWritingLock[9] =  handWritingMenuLettersLock[5][2];
+		
+		handWritingLock[10] =  handWritingMenuLettersLock[1][3];
+		handWritingLock[11] =  handWritingMenuLettersLock[2][3];
+		handWritingLock[12] =  handWritingMenuLettersLock[3][3];
+		handWritingLock[13] =  handWritingMenuLettersLock[4][3];
+		handWritingLock[14] =  handWritingMenuLettersLock[5][3];
+		
+		handWritingLock[15] =  handWritingMenuLettersLock[1][4];
+		handWritingLock[16] =  handWritingMenuLettersLock[2][4];
+		handWritingLock[17] =  handWritingMenuLettersLock[3][4];
+		handWritingLock[18] =  handWritingMenuLettersLock[4][4];
+		handWritingLock[19] =  handWritingMenuLettersLock[5][4];
+		
+	}
+	
+	public void setHandWritingMenuLetterIcon()
+	{
+		for(int i=1; i<=5; i++)
+		{
+			for(int j=1; j<=4; j++) 
 			{
 				menuLetters[i][j] = new Sprite(i*130-120, j*100-120, mMenuTextureRegionMenuLetters[i][j],
 						vertexBufferObjectManager)
@@ -260,27 +415,40 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 			
 				};
 				menuLetters[i][j].setScale((float) 0.4);
-				menuScene.registerTouchArea(menuLetters[i][j]);
+				//menuScene.registerTouchArea(menuLetters[i][j]);
 				menuScene.attachChild(menuLetters[i][j]);
 			}
 		}
-		return menuScene;
+		
+		handWritingLetter[0] =  menuLetters[1][1];
+		handWritingLetter[1] =  menuLetters[2][1];
+		handWritingLetter[2] =  menuLetters[3][1];
+		handWritingLetter[3] =  menuLetters[4][1];
+		handWritingLetter[4] =  menuLetters[5][1];
+		
+		handWritingLetter[5] =  menuLetters[1][2];
+		handWritingLetter[6] =  menuLetters[2][2];
+		handWritingLetter[7] =  menuLetters[3][2];
+		handWritingLetter[8] =  menuLetters[4][2];
+		handWritingLetter[9] =  menuLetters[5][2];
+		
+		handWritingLetter[10] =  menuLetters[1][3];
+		handWritingLetter[11] =  menuLetters[2][3];
+		handWritingLetter[12] =  menuLetters[3][3];
+		handWritingLetter[13] =  menuLetters[4][3];
+		handWritingLetter[14] =  menuLetters[5][3];
+		
+		handWritingLetter[15] =  menuLetters[1][4];
+		handWritingLetter[16] =  menuLetters[2][4];
+		handWritingLetter[17] =  menuLetters[3][4];
+		handWritingLetter[18] =  menuLetters[4][4];
+		handWritingLetter[19] =  menuLetters[5][4];
 	}
-
-	public boolean setMenuLetter(TouchEvent pSceneTouchEvent,int row, int column)
+	
+	public static int loadSavedPreferences(String key)
 	{
-		return pSceneTouchEvent.getX()- menuLetters[row][column].getWidth()/2> menuLetters[1][1].getX()-50 &&
-		pSceneTouchEvent.getX()-menuLetters[row][column].getWidth()/2<menuLetters[row][column].getX()+menuLetterBlockSize &&
-		pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2>menuLetters[row][column].getY()-60 &&
-		pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2<menuLetters[row][column].getY()+menuLetterBlockSize;
-	}
-	 
-	public void setStartActivity(int number, int row, int column)
-	{
-		menuLetters[row][column].setScale((float) 0.55);
-		letterNumber = number;
-		startActivity(new Intent(getBaseContext(), GameActivity.class)); 
-		finish();
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuInstace);
+		return sharedPreferences.getInt(key, 0);
 	}
 	
 	@Override
