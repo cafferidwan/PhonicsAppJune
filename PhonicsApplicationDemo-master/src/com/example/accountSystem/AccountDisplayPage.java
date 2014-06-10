@@ -51,6 +51,7 @@ public class AccountDisplayPage extends Activity
 				// TODO Auto-generated method stub
 				
 				Toast.makeText(getBaseContext(), "Hello", Toast.LENGTH_LONG).show();
+				startActivity(new Intent(getBaseContext(), AdminPanel.class));
   
 				return true;
 			}

@@ -17,7 +17,9 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
 
 import com.example.accountSystem.AccountDisplayPage;
+import com.example.accountSystem.AdminPanel;
 import com.example.phonicsapp.MenuPage;
+import com.example.phonicsapp.SetMenuLetters;
 
 
 import android.content.Intent;
@@ -47,7 +49,7 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 	public static Sprite menuBackground;
 	public static Sprite[][] menuLetters = new Sprite[50][50];
 	public static int letterNumber, handwritingMenuLettersCounters;
-	public int menuLetterBhandWritingLockSize;
+	public static int menuLetterBhandWritingLockSize;
 	
 	
 	public static BitmapTextureAtlas mBitmapTextureAtlasHandwritingLettersLock ;
@@ -140,81 +142,100 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 		menuBackground.setWidth(CAMERA_WIDTH);
 		menuScene.attachChild(menuBackground);
 		
+		//set the menu letters
+		SetMenuLetters.setHandWritingMenuLetterIcon();
 		
-		setHandWritingMenuLetterIcon();
+		checkAdmin();
 		
-		//lock icons
-		setHandWritingLockIcon();
-		
-		if(AccountDisplayPage.accountNumber==0)
-		{
-			handwritingMenuLettersCounters = loadSavedPreferences("0");
-			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
-		}
-		else if(AccountDisplayPage.accountNumber==1)
-		{
-			handwritingMenuLettersCounters = loadSavedPreferences("1");
-			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
-		}
-		else if(AccountDisplayPage.accountNumber==2)
-		{
-			handwritingMenuLettersCounters = loadSavedPreferences("2");
-			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
-		}
-		else if(AccountDisplayPage.accountNumber==3)
-		{
-			handwritingMenuLettersCounters = loadSavedPreferences("3");
-			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
-		}
-		else if(AccountDisplayPage.accountNumber==4)
-		{
-			handwritingMenuLettersCounters = loadSavedPreferences("4");
-			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
-		}
-		else if(AccountDisplayPage.accountNumber==5)
-		{
-			handwritingMenuLettersCounters = loadSavedPreferences("5");
-			Debug.d("letterCounter:"+handwritingMenuLettersCounters);
-		}
-		
-		//Exclude the extra count of the assessment part from menu page
-		if(handwritingMenuLettersCounters>=5 && handwritingMenuLettersCounters<11)
-		{
-			handwritingMenuLettersCounters = handwritingMenuLettersCounters-1;
-		}
-		else if(handwritingMenuLettersCounters>=11 && handwritingMenuLettersCounters<17)
-		{
-			handwritingMenuLettersCounters = handwritingMenuLettersCounters-2;
-		}
-		else if(handwritingMenuLettersCounters>=17 && handwritingMenuLettersCounters<=23)
-		{
-			handwritingMenuLettersCounters = handwritingMenuLettersCounters-3;
-		}
-		
-
-		if(handwritingMenuLettersCounters!=20)
-		{
-			for(int i=0;i<=handwritingMenuLettersCounters;i++)
-			{
-				handWritingLock[i].setVisible(false);
-				menuScene.registerTouchArea(handWritingLetter[i]);
-			}
-		}
-		else if(handwritingMenuLettersCounters==20 || handwritingMenuLettersCounters > 20)
-		{
-			for(int i=0;i<=19;i++)
-			{
-				handWritingLock[i].setVisible(false);
-				menuScene.registerTouchArea(handWritingLetter[i]);
-			}
-//			finish();
-//			startActivity(new Intent(getBaseContext(), MenuPage.class));
-		}
 		
 		return menuScene;
 	}
 
-	public boolean setMenuLetter(TouchEvent pSceneTouchEvent,int row, int column)
+	public void checkAdmin()
+	{
+		//if the user is player
+		if(AdminPanel.adminEnable == false)
+		{
+			//lock icons
+			setHandWritingLockIcon();
+			
+			if(AccountDisplayPage.accountNumber==0)
+			{
+				handwritingMenuLettersCounters = loadSavedPreferences("0");
+				Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+			}
+			else if(AccountDisplayPage.accountNumber==1)
+			{
+				handwritingMenuLettersCounters = loadSavedPreferences("1");
+				Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+			}
+			else if(AccountDisplayPage.accountNumber==2)
+			{
+				handwritingMenuLettersCounters = loadSavedPreferences("2");
+				Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+			}
+			else if(AccountDisplayPage.accountNumber==3)
+			{
+				handwritingMenuLettersCounters = loadSavedPreferences("3");
+				Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+			}
+			else if(AccountDisplayPage.accountNumber==4)
+			{
+				handwritingMenuLettersCounters = loadSavedPreferences("4");
+				Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+			}
+			else if(AccountDisplayPage.accountNumber==5)
+			{
+				handwritingMenuLettersCounters = loadSavedPreferences("5");
+				Debug.d("letterCounter:"+handwritingMenuLettersCounters);
+			}
+			
+			//Exclude the extra count of the assessment part from menu page
+			if(handwritingMenuLettersCounters>=5 && handwritingMenuLettersCounters<11)
+			{
+				handwritingMenuLettersCounters = handwritingMenuLettersCounters-1;
+			}
+			else if(handwritingMenuLettersCounters>=11 && handwritingMenuLettersCounters<17)
+			{
+				handwritingMenuLettersCounters = handwritingMenuLettersCounters-2;
+			}
+			else if(handwritingMenuLettersCounters>=17 && handwritingMenuLettersCounters<=23)
+			{
+				handwritingMenuLettersCounters = handwritingMenuLettersCounters-3;
+			}
+			
+
+			if(handwritingMenuLettersCounters<=19)
+			{
+				for(int i=0;i<=handwritingMenuLettersCounters;i++)
+				{
+					handWritingLock[i].setVisible(false);
+					menuScene.registerTouchArea(handWritingLetter[i]);
+				}
+			}
+			else if(handwritingMenuLettersCounters==20 || handwritingMenuLettersCounters > 20)
+			{
+				for(int i=0;i<=19;i++)
+				{
+					handWritingLock[i].setVisible(false);
+					menuScene.registerTouchArea(handWritingLetter[i]);
+				}
+//				finish();
+//				startActivity(new Intent(getBaseContext(), MenuPage.class));
+			}
+		}
+		//if the user is admin
+		else if(AdminPanel.adminEnable == true)
+		{
+			for(int i=0; i<=19; i++)
+			{
+				menuScene.registerTouchArea(handWritingLetter[i]);
+			}
+		}
+		
+	}
+
+	public static boolean setMenuLetter(TouchEvent pSceneTouchEvent,int row, int column)
 	{
 		return pSceneTouchEvent.getX()- menuLetters[row][column].getWidth()/2> menuLetters[1][1].getX()-50 &&
 		pSceneTouchEvent.getX()-menuLetters[row][column].getWidth()/2<menuLetters[row][column].getX()+menuLetterBhandWritingLockSize &&
@@ -222,12 +243,12 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 		pSceneTouchEvent.getY()-menuLetters[row][column].getHeight()/2<menuLetters[row][column].getY()+menuLetterBhandWritingLockSize;
 	}
 	 
-	public void setStartActivity(int number, int row, int column)
+	public static void setStartActivity(int number, int row, int column)
 	{
 		menuLetters[row][column].setScale((float) 0.55);
 		letterNumber = number;
-		startActivity(new Intent(getBaseContext(), GameActivity.class)); 
-		finish();
+		MenuInstace.startActivity(new Intent(MenuInstace.getBaseContext(), GameActivity.class)); 
+		MenuInstace.finish();
 	}
 	
 	//set the handWritingLock icon
@@ -271,179 +292,7 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 		
 	}
 	
-	public void setHandWritingMenuLetterIcon()
-	{
-		for(int i=1; i<=5; i++)
-		{
-			for(int j=1; j<=4; j++) 
-			{
-				menuLetters[i][j] = new Sprite(i*130-120, j*100-120, mMenuTextureRegionMenuLetters[i][j],
-						vertexBufferObjectManager)
-				{
-					@Override
-					public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY)
-					{
-						switch (pSceneTouchEvent.getAction()) 
-						{
-						case TouchEvent.ACTION_DOWN:
-							
-//							Debug.d("Touch:"+(pSceneTouchEvent.getX()- this.getWidth()/2));
-//							Debug.d("Letter2.x:"+menuLetters[2][2].getX());
-//							Debug.d("Letter2.y:"+menuLetters[2][2].getY());
-							
-							//1.Mo 2.Aa 3.e 4.Raw 5.Ko 6.Bo 7.TalibaSha 8.Lo 9.Po 10.Go 11.Ho
-							//12.Kho 13.Cho 14.No 15.A 16.Do 17.U 18.To 19.Toh 20.Doh 21.Ukar
-							//22.Ekar 23.Akar 24.Aakar
-						
-							//Mo
-							if(setMenuLetter(pSceneTouchEvent, 1,1)== true)
-							{
-								setStartActivity(1,1,1);
-							}
-							//Aa
-							else if(setMenuLetter(pSceneTouchEvent, 2,1)== true)
-							{
-								setStartActivity(2,2,1); 
-							}
-							//Lo
-							else if(setMenuLetter(pSceneTouchEvent, 3,1)== true)
-							{
-								setStartActivity(8,3,1); 
-							} 
-							//Ko
-							else if(setMenuLetter(pSceneTouchEvent, 4,1)== true)
-							{
-								setStartActivity(5,4,1); 
-							}
-							//To
-							else if(setMenuLetter(pSceneTouchEvent, 5,1)== true)
-							{
-								setStartActivity(18,5,1); 
-							}
-							
-							////////////////////
-							//Bo
-							else if(setMenuLetter(pSceneTouchEvent, 1,2)== true)
-							{
-								setStartActivity(6,1,2); 
-							}
-							//No
-							else if(setMenuLetter(pSceneTouchEvent, 2,2)== true)
-							{
-								setStartActivity(14,2,2); 
-							}
-							//Cho
-							else if(setMenuLetter(pSceneTouchEvent, 3,2)== true)
-							{
-								setStartActivity(13,3,2); 
-							}
-							//E
-							else if(setMenuLetter(pSceneTouchEvent, 4,2)== true)
-							{
-								setStartActivity(3,4,2); 
-							}
-							//Po
-							else if(setMenuLetter(pSceneTouchEvent, 5,2)== true)
-							{
-								setStartActivity(9,5,2); 
-							}
-							
-							
-							///////////////////////////
-							//Ro
-							else if(setMenuLetter(pSceneTouchEvent, 1,3)== true)
-							{
-								setStartActivity(4,1,3); 
-							}
-							//TalibaSha
-							else if(setMenuLetter(pSceneTouchEvent, 2,3)== true)
-							{
-								setStartActivity(7,2,3); 
-							}
-							//Do
-							else if(setMenuLetter(pSceneTouchEvent, 3,3)== true)
-							{
-								setStartActivity(16,3,3); 
-							}
-							//A
-							else if(setMenuLetter(pSceneTouchEvent, 4,3)== true)
-							{
-								setStartActivity(15,4,3); 
-							}
-							//Doh
-							else if(setMenuLetter(pSceneTouchEvent, 5,3)== true)
-							{
-								setStartActivity(20,5,3); 
-							}
-							
-							///////////////////////////
-							//Toh
-							else if(setMenuLetter(pSceneTouchEvent, 1,4)== true)
-							{
-								setStartActivity(19,1,4); 
-							}
-							//Kho
-							else if(setMenuLetter(pSceneTouchEvent, 2,4)== true)
-							{
-								setStartActivity(12,2,4); 
-							}
-							//U
-							else if(setMenuLetter(pSceneTouchEvent, 3,4)== true)
-							{
-								setStartActivity(17,3,4); 
-							}
-							//Go
-							else if(setMenuLetter(pSceneTouchEvent, 4,4)== true)
-							{
-								setStartActivity(10,4,4); 
-							}
-							//Ho
-							else if(setMenuLetter(pSceneTouchEvent, 5,4)== true)
-							{
-								setStartActivity(11,5,4); 
-//								setStartActivity(24,5,4); 
-							}
-							
-							
-						break;
-						case TouchEvent.ACTION_UP:
-		
-						break;
-						}
-						return true;
-					}
-			
-				};
-				menuLetters[i][j].setScale((float) 0.4);
-				//menuScene.registerTouchArea(menuLetters[i][j]);
-				menuScene.attachChild(menuLetters[i][j]);
-			}
-		}
-		
-		handWritingLetter[0] =  menuLetters[1][1];
-		handWritingLetter[1] =  menuLetters[2][1];
-		handWritingLetter[2] =  menuLetters[3][1];
-		handWritingLetter[3] =  menuLetters[4][1];
-		handWritingLetter[4] =  menuLetters[5][1];
-		
-		handWritingLetter[5] =  menuLetters[1][2];
-		handWritingLetter[6] =  menuLetters[2][2];
-		handWritingLetter[7] =  menuLetters[3][2];
-		handWritingLetter[8] =  menuLetters[4][2];
-		handWritingLetter[9] =  menuLetters[5][2];
-		
-		handWritingLetter[10] =  menuLetters[1][3];
-		handWritingLetter[11] =  menuLetters[2][3];
-		handWritingLetter[12] =  menuLetters[3][3];
-		handWritingLetter[13] =  menuLetters[4][3];
-		handWritingLetter[14] =  menuLetters[5][3];
-		
-		handWritingLetter[15] =  menuLetters[1][4];
-		handWritingLetter[16] =  menuLetters[2][4];
-		handWritingLetter[17] =  menuLetters[3][4];
-		handWritingLetter[18] =  menuLetters[4][4];
-		handWritingLetter[19] =  menuLetters[5][4];
-	}
+	
 	
 	public static int loadSavedPreferences(String key)
 	{
