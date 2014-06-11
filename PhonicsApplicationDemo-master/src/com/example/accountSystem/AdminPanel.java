@@ -1,176 +1,97 @@
 package com.example.accountSystem;
 
-import org.andengine.engine.camera.Camera;
-import org.andengine.engine.options.EngineOptions;
-import org.andengine.engine.options.ScreenOrientation;
-import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
-import org.andengine.entity.scene.Scene;
-import org.andengine.entity.sprite.Sprite;
-import org.andengine.input.touch.TouchEvent;
-import org.andengine.opengl.texture.TextureOptions;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
-
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.example.phonicsapp.MenuPage;
+import com.example.phonicsapp.R;
 import com.example.phonicsapp.HandWriting.banglaletterwriting.HandWritingMenu;
 
-public class AdminPanel extends SimpleBaseGameActivity
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+
+public class AdminPanel extends Activity
 {
-
-	public static int CAMERA_WIDTH, CAMERA_HEIGHT;
-	public Camera mCamera;
-	public static Scene adminPanelScene;
-	public static VertexBufferObjectManager vertexBufferObjectManager;
-	public static AdminPanel AdminPanelInstance;
-
-	// Admin Items
-	public static BitmapTextureAtlas mBitmapTextureAtlasAdminPanelBackground;
-	public static ITextureRegion mAdminPanelBackGroundTextureRegion;
-	
-	public static BitmapTextureAtlas mBitmapTextureAtlasAdminPanelShowHandWriting ;
-	public static ITextureRegion  mAdminPanelTextureRegionAdminPanelShowHandWriting ;
-	
-	public static BitmapTextureAtlas mBitmapTextureAtlasAdminPanelShowGames ;
-	public static ITextureRegion  mAdminPanelTextureRegionAdminPanelShowGames ;
-	
-	public static Sprite adminPanelBackground, adminShowGames, adminShowHandwriting;
-	
+	private ListView mainListView;
+	private ArrayAdapter<String> listAdapter;
 	public static boolean adminEnable = false;
-	
-	@Override
-	public void onBackPressed()
+
+    public Button buttonGame, buttonHandWriting;
+    
+    public static String currentAccount;
+    
+	public void onCreate(Bundle savedInstanceState)
 	{
-		finish();
-		//startActivity(new Intent(getBaseContext(), GameMainPage.class));
-	}
-	
-	@Override
-	public EngineOptions onCreateEngineOptions() 
-	{
-		// TODO Auto-generated method stub
-		AdminPanelInstance = this;
-		CAMERA_HEIGHT = 454;
-		CAMERA_WIDTH = 800;
-
-		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_SENSOR,
-				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
-	}
-
-	@Override
-	protected void onCreateResources() 
-	{
-		// TODO Auto-generated method stub
-
-		// AdminPanel images
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("Assets/");
-		mBitmapTextureAtlasAdminPanelBackground = new BitmapTextureAtlas(
-				this.getTextureManager(), 1600, 864, TextureOptions.BILINEAR);
-		mAdminPanelBackGroundTextureRegion = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(mBitmapTextureAtlasAdminPanelBackground, this,
-				"JungleBG.png", 0, 0, 1, 1);
-
-		mBitmapTextureAtlasAdminPanelShowHandWriting = new BitmapTextureAtlas(
-				this.getTextureManager(), 200, 200,
-				TextureOptions.BILINEAR);
-		mAdminPanelTextureRegionAdminPanelShowHandWriting= BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(
-				mBitmapTextureAtlasAdminPanelShowHandWriting, this, "lock.png", 0, 0, 1, 1);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.student_view);
 		
-		mBitmapTextureAtlasAdminPanelShowGames = new BitmapTextureAtlas(
-				this.getTextureManager(), 200, 200,
-				TextureOptions.BILINEAR);
-		mAdminPanelTextureRegionAdminPanelShowGames= BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(
-				mBitmapTextureAtlasAdminPanelShowGames, this, "lock.png", 0, 0, 1, 1);
+		mainListView = (ListView) findViewById( R.id.mainListView );  
+		buttonGame = (Button) findViewById(R.id.btnGame);
+		buttonHandWriting = (Button) findViewById(R.id.btnHandWriting);
 		
-		mBitmapTextureAtlasAdminPanelBackground.load();
-		mBitmapTextureAtlasAdminPanelShowGames.load();
-		mBitmapTextureAtlasAdminPanelShowHandWriting.load();
-		
-	}
-
-	@Override
-	protected Scene onCreateScene()
-	{
-		// TODO Auto-generated method stub
-
-		adminPanelScene = new Scene();
-		
-		adminPanelBackground = new Sprite(0, 0, mAdminPanelBackGroundTextureRegion, vertexBufferObjectManager);
-		adminPanelBackground.setHeight(CAMERA_HEIGHT);
-		adminPanelBackground.setWidth(CAMERA_WIDTH);
-		adminPanelScene.attachChild(adminPanelBackground);
-		
-		adminShowGames = new Sprite(100, 100, mAdminPanelTextureRegionAdminPanelShowGames, vertexBufferObjectManager)
-		{
+	    ArrayList<String> studentList = new ArrayList<String>();  
+	    studentList.add(AccountDisplayPage.student1);  
+	    studentList.add(AccountDisplayPage.student2);
+	    studentList.add(AccountDisplayPage.student3);
+	    studentList.add(AccountDisplayPage.student4);
+	    studentList.add(AccountDisplayPage.student5);
+	    studentList.add(AccountDisplayPage.student6);
+	    
+	    
+	    // Create ArrayAdapter using the planet list.  
+	    listAdapter = new ArrayAdapter<String>(this, R.layout.student_row, studentList);  
+	    // Set the ArrayAdapter as the ListView's adapter.  
+	    mainListView.setAdapter( listAdapter ); 
+	    
+	    mainListView .setOnItemClickListener(new OnItemClickListener()
+	    {
+	       @Override
+	       public void onItemClick(AdapterView<?> adapter, View v, int position,
+	             long arg3) 
+	       {
+	             currentAccount = (String)adapter.getItemAtPosition(position); 
+	             
+	             Toast.makeText(getBaseContext(), currentAccount, Toast.LENGTH_SHORT).show();
+	             startActivity(new Intent(getBaseContext(), IndividualAccountDescription.class));
+	       }
+	    });
+	    
+	   
+	    //go to unlocked games menu
+	    buttonGame.setOnClickListener(new View.OnClickListener()
+	    {
 			@Override
-			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY)
+			public void onClick(View v) 
 			{
-				switch (pSceneTouchEvent.getAction()) 
-				{
-				case TouchEvent.ACTION_DOWN:
-					
-					adminEnable = true;
-					finish();
-					startActivity(new Intent(getBaseContext(), HandWritingMenu.class));
-					
-				break;
-				case TouchEvent.ACTION_UP:
-					
-
-				break;
-				case TouchEvent.ACTION_MOVE:
-//					this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, 
-//					pSceneTouchEvent.getY() - this.getHeight() / 2);
-
-				break;
-				}
-				return true;
+				// TODO Auto-generated method stub
+				adminEnable = true;
+				finish();
+				startActivity(new Intent(getBaseContext(), MenuPage.class));
 			}
-		};
-		adminShowGames.setScale((float) 0.5);
-		adminPanelScene.registerTouchArea(adminShowGames);
-		adminPanelScene.attachChild(adminShowGames);
-		
-		
-		adminShowHandwriting = new Sprite(400, 100, mAdminPanelTextureRegionAdminPanelShowHandWriting, vertexBufferObjectManager)
-		{
+		});
+	    
+	    //go to handwriting unlocked menu
+	    buttonHandWriting.setOnClickListener(new View.OnClickListener()
+	    {
 			@Override
-			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY)
+			public void onClick(View v) 
 			{
-				switch (pSceneTouchEvent.getAction()) 
-				{
-				case TouchEvent.ACTION_DOWN:
-						
-					adminEnable = true;
-					finish();
-					startActivity(new Intent(getBaseContext(), MenuPage.class));
-					
-				break;
-				case TouchEvent.ACTION_UP:
-					
-
-				break;
-				case TouchEvent.ACTION_MOVE:
-//					this.setPosition(pSceneTouchEvent.getX() - this.getWidth() / 2, 
-//					pSceneTouchEvent.getY() - this.getHeight() / 2);
-
-				break;
-				}
-				return true;
+				// TODO Auto-generated method stub
+				adminEnable = true;
+				finish();
+				startActivity(new Intent(getBaseContext(), HandWritingMenu.class));
 			}
-		};
-		adminShowHandwriting.setScale((float) 0.4);
-		adminPanelScene.registerTouchArea(adminShowHandwriting);
-		adminPanelScene.attachChild(adminShowHandwriting);
-
-		return adminPanelScene;
+		});
 	}
+	
 }

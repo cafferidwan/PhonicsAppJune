@@ -7,10 +7,12 @@ import com.example.phonicsapp.GameMainPage;
 import com.example.phonicsapp.R;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -36,11 +38,13 @@ public class AccountDisplayPage extends Activity
 	
 	Button adminButton;
 	
+	public static String student1, student2, student3, student4, student5, student6;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.account_page);
 		
 		adminButton = (Button) findViewById(R.id.adminPress);
 		adminButton.setOnLongClickListener(new View.OnLongClickListener()
@@ -84,13 +88,20 @@ public class AccountDisplayPage extends Activity
 	
 	public void loadTextView()
 	{
+		student1 = getDeviceIMEI()+"a";
+		student2 = getDeviceIMEI()+"b";
+		student3 = getDeviceIMEI()+"c";
+		student4 = getDeviceIMEI()+"d";
+		student5 = getDeviceIMEI()+"e";
+		student6 = getDeviceIMEI()+"f";
+		
 		//adding textview icons
-		gridArray.add(new Item(accountPic[0], "0"));
-		gridArray.add(new Item(accountPic[1], "1"));
-		gridArray.add(new Item(accountPic[2], "2"));
-		gridArray.add(new Item(accountPic[3], "3"));
-		gridArray.add(new Item(accountPic[4], "4"));
-		gridArray.add(new Item(accountPic[5], "5"));
+		gridArray.add(new Item(accountPic[0], student1));
+		gridArray.add(new Item(accountPic[1], student2));
+		gridArray.add(new Item(accountPic[2], student3));
+		gridArray.add(new Item(accountPic[3], student4));
+		gridArray.add(new Item(accountPic[4], student5));
+		gridArray.add(new Item(accountPic[5], student6));
 	} 
 	
 	public void loadingAccountImage()
@@ -105,8 +116,6 @@ public class AccountDisplayPage extends Activity
 				Bitmap scaled = BitmapFactory.decodeFile(imgFile[i].getAbsolutePath());
 				accountPic[i] =  Bitmap.createScaledBitmap(scaled, 226,
 						223, false);
-//				accountPic[i] = ShrinkBitmap(imgFile[i].getAbsolutePath(),226,223);
-				
 			}
 			//else load the default image   
 			else
@@ -142,5 +151,13 @@ public class AccountDisplayPage extends Activity
  		 }
  		 
  		 
+	}
+	
+	public String getDeviceIMEI() 
+	{
+		TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		String device_id = tm.getDeviceId();
+
+		return device_id;
 	}
 }

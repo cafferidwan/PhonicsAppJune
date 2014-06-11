@@ -10,7 +10,7 @@
 
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission
         android:name="android.permission.CAMERA"
         android:required="true" />
@@ -32,7 +32,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.accountSystem.AccountDisplayPage"
+                 android:name="com.example.phonicsapp.monkeyGame.MonkeyGameActivity"
+           
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
@@ -45,7 +46,16 @@
         
         <activity
             android:name="com.example.accountSystem.AdminPanel"
-            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar" 
+            >
+        </activity>
+        
+         <activity
+            android:name="com.example.accountSystem.IndividualAccountDescription"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar" 
+            >
         </activity>
         
         <activity
@@ -64,7 +74,8 @@
         </activity>
         
         <activity
-            android:name="com.example.phonicsapp.monkeyGame.MonkeyGameActivity"
+            android:name="com.example.accountSystem.AccountDisplayPage"
+            
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>

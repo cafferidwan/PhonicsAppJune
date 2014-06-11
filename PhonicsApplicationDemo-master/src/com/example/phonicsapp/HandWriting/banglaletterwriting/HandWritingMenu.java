@@ -292,8 +292,6 @@ public class HandWritingMenu extends SimpleBaseGameActivity implements IOnSceneT
 		
 	}
 	
-	
-	
 	public static int loadSavedPreferences(String key)
 	{
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MenuInstace);
